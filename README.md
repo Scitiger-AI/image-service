@@ -1,6 +1,6 @@
 # Image Service
 
-图像模型调用服务，支持通过API调用各种图像生成模型。
+图像模型调用服务是 SciTiger AI模型调用微服务体系的一部分，支持通过API调用各种图像生成模型，包括wanx2.1、liblib AI 等。
 
 ## 功能特性
 
