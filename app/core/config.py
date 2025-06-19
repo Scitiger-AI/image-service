@@ -14,12 +14,12 @@ class Settings(BaseSettings):
     """应用配置类，使用Pydantic V2语法"""
     
     # 应用信息
-    APP_NAME: str = "text-service"
+    APP_NAME: str = "image-service"
     API_V1_STR: str = "/api"
     
     # MongoDB配置
     MONGODB_URL: str = "mongodb://localhost:27017"
-    MONGODB_DB_NAME: str = "text_service"
+    MONGODB_DB_NAME: str = "image_service"
     MONGODB_USER: str = ""
     MONGODB_PASSWORD: str = ""
     MONGODB_AUTH_DB_NAME: str = "admin"
@@ -37,7 +37,7 @@ class Settings(BaseSettings):
     VERIFY_API_KEY_URL: str = "/api/platform/auth/microservice/verify-api-key/"
     
     # 服务名称（用于权限检查）
-    SERVICE_NAME: str = "text-service"
+    SERVICE_NAME: str = "image-service"
     
     # 是否启用认证
     ENABLE_AUTH: bool = True
@@ -46,37 +46,24 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
     
     # 模型配置
-    DEFAULT_MODEL: str = "qwen-turbo"
+    DEFAULT_MODEL: str = "wanx2.1-t2i-turbo"
     DEFAULT_PROVIDER: str = "aliyun"
     
     # 提供商支持的模型列表（可在.env中配置）
-    ALIYUN_SUPPORTED_MODELS: str = "qwen-turbo,qwen-plus,qwen-max,qwen3-235b-a22b,qwen3-30b-a3b,qwen-plus-latest,qwen-turbo-latest,qwen-vl-max,qwen-vl-plus"
+    ALIYUN_SUPPORTED_MODELS: str = "wanx2.1-t2i-turbo,wanx2.1-t2i-plus,wanx2.0-t2i-turbo"
+    LIBLIBAI_SUPPORTED_MODELS: str = "star-3-alpha-t2i,star-3-alpha-i2i,liblib-custom"
     
     # 任务配置
     TASK_TIME_LIMIT: int = 3600  # 任务超时时间（秒）
     
     # 阿里云配置
-    ALIYUN_API_KEY: str = os.getenv("ALIYUN_API_KEY", "")
-    ALIYUN_API_URL: str = os.getenv("ALIYUN_API_URL", "")
+    ALIYUN_API_KEY: str = ""
+    ALIYUN_API_URL: str = "https://dashscope.aliyuncs.com/api/v1/services/aigc/text2image/image-synthesis"
     
     # LiblibAI配置
-    LIBLIBAI_ACCESS_KEY: str = os.getenv("LIBLIBAI_ACCESS_KEY", "")
-    LIBLIBAI_SECRET_KEY: str = os.getenv("LIBLIBAI_SECRET_KEY", "")
-    LIBLIBAI_API_URL: str = os.getenv("LIBLIBAI_API_URL", "https://openapi.liblibai.cloud")
-    
-    # 支持的提供商和模型
-    PROVIDER_SUPPORTED_MODELS: Dict[str, List[str]] = {
-        "aliyun": [
-            "wanx2.1-t2i-turbo",
-            "wanx2.1-t2i-plus",
-            "wanx2.0-t2i-turbo"
-        ],
-        "liblibai": [
-            "star-3-alpha-t2i",
-            "star-3-alpha-i2i",
-            "liblib-custom"
-        ],
-    }
+    LIBLIBAI_ACCESS_KEY: str = ""
+    LIBLIBAI_SECRET_KEY: str = ""
+    LIBLIBAI_API_URL: str = "https://openapi.liblibai.cloud"
     
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -113,17 +100,12 @@ class Settings(BaseSettings):
             
     @computed_field
     @property
-    def provider_supported_models(self) -> Dict[str, List[str]]:
-        """获取支持的提供商和模型"""
-        if hasattr(self, "PROVIDER_SUPPORTED_MODELS") and self.PROVIDER_SUPPORTED_MODELS:
-            return self.PROVIDER_SUPPORTED_MODELS
-        else:
-            # 向后兼容，使用旧的配置方式
-            return {
-                "aliyun": [model.strip() for model in self.ALIYUN_SUPPORTED_MODELS.split(",")],
-                "liblibai": [model.strip() for model in self.PROVIDER_SUPPORTED_MODELS["liblibai"]],
-                "deepseek": [model.strip() for model in self.PROVIDER_SUPPORTED_MODELS["deepseek"]]
-            }
+    def PROVIDER_SUPPORTED_MODELS(self) -> Dict[str, List[str]]:
+        """获取各提供商支持的模型列表，将逗号分隔的字符串转换为列表"""
+        return {
+            "aliyun": [model.strip() for model in self.ALIYUN_SUPPORTED_MODELS.split(",")],
+            "liblibai": [model.strip() for model in self.LIBLIBAI_SUPPORTED_MODELS.split(",")]
+        }
     
     def __init__(self, **data):
         super().__init__(**data)
