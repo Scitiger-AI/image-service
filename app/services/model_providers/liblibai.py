@@ -413,8 +413,7 @@ class LiblibAIProvider(ModelProvider):
         }
         
         # 设置图片保存目录
-        base_dir = Path(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
-        images_dir = base_dir / "data" / "images" / "liblibai"
+        images_dir = Path(settings.DATA_DIR) / "images" / "liblibai"
         os.makedirs(images_dir, exist_ok=True)
         
         # 下载并保存图片
