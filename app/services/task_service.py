@@ -106,7 +106,8 @@ class TaskService:
             if len(result["result"]["images"]) > 0 and "local_path" in result["result"]["images"][0]:
                 main_image = result["result"]["images"][0]
                 file_path = main_image["local_path"]
-                relative_url, download_url = FileUtils.get_urls_from_path(file_path)
+                relative_url, download_url, url = FileUtils.get_urls_from_path(file_path)
+                result["result"]["url"] = url
                 result["result"]["file_url"] = relative_url
                 result["result"]["download_url"] = download_url
             
@@ -114,7 +115,8 @@ class TaskService:
             for image in result["result"]["images"]:
                 if "local_path" in image:
                     file_path = image["local_path"]
-                    relative_url, download_url = FileUtils.get_urls_from_path(file_path)
+                    relative_url, download_url, url = FileUtils.get_urls_from_path(file_path)
+                    image["url"] = url
                     image["file_url"] = relative_url
                     image["download_url"] = download_url
         

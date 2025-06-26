@@ -282,9 +282,10 @@ class FileUtils:
             for image in result_copy["images"]:
                 if "local_path" in image:
                     file_path = image["local_path"]
-                    relative_url, download_url = cls.get_urls_from_path(file_path)
+                    relative_url, download_url, url = cls.get_urls_from_path(file_path)
                     image["file_url"] = relative_url
                     image["download_url"] = download_url
+                    image["url"] = url
         
         return result_copy
     
@@ -324,12 +325,14 @@ class FileUtils:
             file_name = path.name
             encoded_name = quote(file_name)
             download_url = f"{settings.MEDIA_DOWNLOAD_BASE_URL}/{encoded_name}"
+            media_base_path = f"{settings.MEDIA_BASE_PATH}/{relative_url}"
             
-            return f"{settings.MEDIA_BASE_PATH}/{relative_url}", download_url
+            return media_base_path, download_url, f"{settings.MEDIA_DOWNLOAD_BASE_URL}/{media_base_path}"
             
         except Exception as e:
             logger.error(f"转换文件路径到URL时出错: {str(e)}")
             # 出错时返回文件名
             file_name = os.path.basename(file_path)
-            return f"{settings.MEDIA_BASE_PATH}/{file_name}", f"{settings.MEDIA_DOWNLOAD_BASE_URL}/{file_name}"
+            media_base_path = f"{settings.MEDIA_BASE_PATH}/{file_name}"
+            return media_base_path, f"{settings.MEDIA_DOWNLOAD_BASE_URL}/{file_name}", f"{settings.MEDIA_DOWNLOAD_BASE_URL}/{media_base_path}"
 
